@@ -38,12 +38,24 @@ body{
   cursor:pointer;transition:.18s;font-family:inherit;
   display:inline-flex;align-items:center;gap:6px;
 }
-.tbtn:hover{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+.tbtn:hover:not(:disabled){background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+.tbtn:disabled{opacity:.45;cursor:not-allowed}
+.tbtn:disabled:hover{background:var(--surface-2);color:var(--ink-2);border-color:var(--line)}
 .tbtn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border:none}
 .tbtn.primary:hover{filter:brightness(1.08)}
 .timer{
   display:flex;align-items:center;gap:9px;background:var(--surface-2);
   border:1px solid var(--line);border-radius:11px;padding:5px 8px 5px 13px;
+  transition:.3s;
+}
+.timer.locked{
+  border-color:var(--violet);
+  box-shadow:0 0 0 4px rgba(109,40,217,.14);
+  animation:glow 2s ease-in-out infinite;
+}
+@keyframes glow{
+  0%,100%{box-shadow:0 0 0 4px rgba(109,40,217,.14)}
+  50%{box-shadow:0 0 0 8px rgba(109,40,217,.05)}
 }
 .timer .clock{
   font-family:"SF Mono",Consolas,monospace;font-size:16px;font-weight:800;
@@ -59,6 +71,21 @@ body{
 }
 .timer button:hover{filter:brightness(1.12)}
 .timer button.reset{background:var(--ink-3)}
+.timer.locked #startBtn{
+  background:var(--violet);
+  animation:pulse-btn 1.6s ease-in-out infinite;
+}
+@keyframes pulse-btn{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.14)}
+}
+.timer-hint{
+  font-size:11px;font-weight:800;color:var(--violet);
+  letter-spacing:.5px;text-transform:uppercase;
+  padding:0 6px;transition:.3s;
+  max-width:0;overflow:hidden;white-space:nowrap;
+}
+.timer.locked .timer-hint{max-width:120px}
 .wrap{max-width:1180px;margin:0 auto;padding:30px 22px 40px}
 .hero{
   background:linear-gradient(135deg,var(--brand-soft),#ffffff 65%);
@@ -114,6 +141,41 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
 }
 .total-box b{display:block;font-size:40px;line-height:1;letter-spacing:-1.5px}
 .total-box span{font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;opacity:.85}
+/* ============ LOCK OVERLAY ============ */
+.locked-wrap{position:relative;border-radius:var(--radius);margin-bottom:24px}
+.locked-wrap.locked > .lockable{
+  pointer-events:none;user-select:none;filter:blur(3px) saturate(.6);
+  opacity:.5;transition:.3s;
+}
+.lock-overlay{
+  position:absolute;inset:0;display:none;place-items:center;
+  background:rgba(238,242,246,.72);backdrop-filter:blur(4px);
+  border-radius:var(--radius);z-index:10;
+}
+.locked-wrap.locked .lock-overlay{display:grid}
+.lock-box{
+  background:var(--surface);border:2px solid var(--violet);
+  border-radius:20px;padding:32px 42px;text-align:center;
+  box-shadow:0 24px 48px rgba(109,40,217,.18);max-width:460px;
+  animation:slideIn .4s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.lock-box .lock-icon{
+  font-size:52px;margin-bottom:10px;line-height:1;
+  display:inline-block;animation:swing 2.4s ease-in-out infinite;
+}
+@keyframes swing{
+  0%,100%{transform:rotate(0)}
+  25%{transform:rotate(-8deg)}
+  75%{transform:rotate(8deg)}
+}
+.lock-box h3{
+  font-size:20px;color:var(--violet);margin-bottom:8px;letter-spacing:-.4px;
+}
+.lock-box p{
+  font-size:13.5px;color:var(--ink-2);line-height:1.6;
+}
+.lock-box p b{color:var(--violet);font-weight:900}
 .section{
   background:var(--surface);border:1px solid var(--line);border-radius:20px;
   box-shadow:var(--shadow);margin-bottom:24px;overflow:hidden;
@@ -136,7 +198,6 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
   padding:11px 16px;margin-bottom:18px;line-height:1.6;
 }
 .sec-hint b{color:var(--ink)}
-
 /* ============ PRODUCT CARDS ============ */
 .products-grid{
   display:grid;grid-template-columns:repeat(auto-fit,minmax(520px,1fr));
@@ -253,7 +314,6 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
 .pc-footer .pill.ok{background:var(--ok-soft);color:var(--ok)}
 .pc-footer .pill.part{background:var(--warn-soft);color:var(--warn)}
 .pc-footer .pill.bad{background:var(--bad-soft);color:var(--bad)}
-
 /* ============ CALCULATION DRILL ============ */
 .calc-grid{
   display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
@@ -300,6 +360,7 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
   transition:.16s;
 }
 .calc-input:focus{outline:none;border-color:var(--brand)}
+.calc-input:disabled{cursor:not-allowed;background:var(--surface-2)}
 .calc-input.correct{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
 .calc-input.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
 .calc-unit{
@@ -316,7 +377,6 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
 .calc-fb.bad{background:var(--bad-soft);border-color:var(--bad);color:#7f1d1d}
 .calc-fb b{font-weight:900}
 @keyframes fadeUp{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
-
 /* ============ REFERENCES ============ */
 .ref-list{display:grid;gap:10px;margin-bottom:18px}
 .ref-row{
@@ -356,7 +416,6 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
 }
 .ref-row.correct .ref-tag{background:var(--ok);color:#fff}
 .ref-row.wrong .ref-tag{background:var(--bad);color:#fff}
-
 /* ============ ACTIONS ============ */
 .actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
 .btn{
@@ -365,8 +424,8 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
   display:inline-flex;align-items:center;gap:8px;
 }
 .btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff}
-.btn.primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.btn:disabled{opacity:.55;cursor:default;transform:none;filter:none}
+.btn.primary:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;filter:none}
 .result-pill{
   margin-left:auto;font-size:13px;font-weight:900;padding:7px 16px;
   border-radius:999px;background:var(--line);color:var(--ink-3);transition:.3s;
@@ -374,7 +433,6 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
 .result-pill.ok{background:var(--ok-soft);color:var(--ok)}
 .result-pill.part{background:var(--warn-soft);color:var(--warn)}
 .result-pill.bad{background:var(--bad-soft);color:var(--bad)}
-
 /* ============ DEBRIEF ============ */
 .debrief{
   background:linear-gradient(135deg,var(--violet-soft),var(--brand-soft));
@@ -394,7 +452,6 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
 .debrief ul li::marker{color:var(--violet);font-weight:800}
 .debrief ul li{margin-bottom:6px}
 .debrief b{color:var(--ink)}
-
 .footbar{
   position:fixed;bottom:0;left:0;right:0;z-index:45;display:flex;
   align-items:center;gap:14px;padding:12px 24px;background:rgba(255,255,255,.94);
@@ -430,6 +487,7 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
   .timer .clock{font-size:14px;min-width:54px}
   .debrief{padding:18px 20px}
   .test-grid{grid-template-columns:1fr}
+  .lock-box{padding:24px 22px;margin:0 12px}
 }
 @media print{
   body{background:#fff;padding:0}
@@ -439,6 +497,8 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
     box-shadow:none;break-inside:avoid;page-break-inside:avoid;
   }
   .test-toggle,.ref-row,.calc-card{border:1px solid #999}
+  .locked-wrap.locked > .lockable{filter:none;opacity:1;pointer-events:auto}
+  .lock-overlay{display:none!important}
 }
 </style>
 </head>
@@ -453,12 +513,13 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
   </div>
   <div class="spacer"></div>
   <div class="tools">
-    <div class="timer" id="timer">
+    <div class="timer locked" id="timer">
       <span class="clock" id="clock">15:00</span>
-      <button id="startBtn" title="Start / Pause">▶</button>
+      <button id="startBtn" title="Start Timer">▶</button>
       <button class="reset" id="resetTimer" title="Reset timer">↺</button>
+      <span class="timer-hint">Start to unlock</span>
     </div>
-    <button class="tbtn" id="checkAllBtn">✓ Check All</button>
+    <button class="tbtn" id="checkAllBtn" disabled>✓ Check All</button>
     <button class="tbtn" id="printBtn">🖨 Print</button>
     <button class="tbtn" id="resetBtn">↺ Reset</button>
   </div>
@@ -479,7 +540,7 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
       <span class="chip">🏆 <b>10 points</b></span>
     </div>
     <ol class="instructions">
-      <li>Your facilitator will give each group <b>4 product cards</b> — oral tablet, IV injection, ophthalmic drops, and cell therapy.</li>
+      <li>Press <b>▶ Start</b> on the timer above to unlock the activity — <b>you cannot answer before the timer starts</b>.</li>
       <li>For each product, <b>select the required QC tests</b>: Bioburden, Specified Organisms, Sterility, Endotoxin, Antimicrobial Effectiveness.</li>
       <li>Complete the <b>calculation drill</b> using the interactive images.</li>
       <li>Select the <b>references</b> that apply to your test matrix.</li>
@@ -509,62 +570,77 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
     </div>
   </section>
 
-  <!-- ============ SECTION A: PRODUCT TEST MATRIX ============ -->
-  <section class="section">
-    <div class="sec-head">
-      <span class="num">A</span>
-      <h2>Select the Required QC Tests for Each Product</h2>
-      <span class="meta">4 products · 5 pts</span>
-    </div>
-    <div class="sec-body">
-      <div class="sec-hint">
-        <b>For each product</b>, select only the QC tests that are actually required. Non-sterile products do not need sterility testing; sterile products do not need bioburden on the finished dose. Selecting tests that do not apply will reduce your score.
-      </div>
-      <div class="products-grid" id="productsGrid"></div>
-      <div class="actions">
-        <button class="btn primary" id="checkMatrixBtn">✓ Check Test Matrix</button>
-        <span class="result-pill" id="matrixResult">Not checked</span>
+  <!-- ============ LOCKED ACTIVITY ============ -->
+  <div class="locked-wrap locked" id="lockedWrap">
+    <div class="lock-overlay">
+      <div class="lock-box">
+        <div class="lock-icon">🔒</div>
+        <h3>Activity Locked</h3>
+        <p>Click <b>▶ Start</b> on the timer above to unlock the product matrices, calculation drill, and reference citations.</p>
       </div>
     </div>
-  </section>
 
-  <!-- ============ SECTION B: CALCULATION DRILL ============ -->
-  <section class="section">
-    <div class="sec-head">
-      <span class="num">B</span>
-      <h2>Calculation Drill</h2>
-      <span class="meta">3 questions · 3 pts</span>
-    </div>
-    <div class="sec-body">
-      <div class="sec-hint">
-        <b>Use the interactive images</b> to work out each calculation. Enter your answer as a decimal number (tolerance ± 0.01). Each correct answer earns 1 point.
-      </div>
-      <div class="calc-grid" id="calcGrid"></div>
-      <div class="actions">
-        <button class="btn primary" id="checkCalcBtn">✓ Check Calculations</button>
-        <span class="result-pill" id="calcResult">Not checked</span>
-      </div>
-    </div>
-  </section>
+    <div class="lockable">
 
-  <!-- ============ SECTION C: REFERENCES ============ -->
-  <section class="section">
-    <div class="sec-head">
-      <span class="num">C</span>
-      <h2>Reference Citations</h2>
-      <span class="meta">2 pts</span>
+      <!-- ============ SECTION A: PRODUCT TEST MATRIX ============ -->
+      <section class="section">
+        <div class="sec-head">
+          <span class="num">A</span>
+          <h2>Select the Required QC Tests for Each Product</h2>
+          <span class="meta">4 products · 5 pts</span>
+        </div>
+        <div class="sec-body">
+          <div class="sec-hint">
+            <b>For each product</b>, select only the QC tests that are actually required. Non-sterile products do not need sterility testing; sterile products do not need bioburden on the finished dose. Selecting tests that do not apply will reduce your score.
+          </div>
+          <div class="products-grid" id="productsGrid"></div>
+          <div class="actions">
+            <button class="btn primary" id="checkMatrixBtn" disabled>✓ Check Test Matrix</button>
+            <span class="result-pill" id="matrixResult">Not checked</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SECTION B: CALCULATION DRILL ============ -->
+      <section class="section">
+        <div class="sec-head">
+          <span class="num">B</span>
+          <h2>Calculation Drill</h2>
+          <span class="meta">3 questions · 3 pts</span>
+        </div>
+        <div class="sec-body">
+          <div class="sec-hint">
+            <b>Use the interactive images</b> to work out each calculation. Enter your answer as a decimal number (tolerance ± 0.01). Each correct answer earns 1 point.
+          </div>
+          <div class="calc-grid" id="calcGrid"></div>
+          <div class="actions">
+            <button class="btn primary" id="checkCalcBtn" disabled>✓ Check Calculations</button>
+            <span class="result-pill" id="calcResult">Not checked</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SECTION C: REFERENCES ============ -->
+      <section class="section">
+        <div class="sec-head">
+          <span class="num">C</span>
+          <h2>Reference Citations</h2>
+          <span class="meta">2 pts</span>
+        </div>
+        <div class="sec-body">
+          <div class="sec-hint">
+            <b>Select the references that apply</b> to the test matrix you built. Five USP chapters are essential for these four products. Wrong selections reduce your score.
+          </div>
+          <div class="ref-list" id="refList"></div>
+          <div class="actions">
+            <button class="btn primary" id="checkRefBtn" disabled>✓ Check References</button>
+            <span class="result-pill" id="refResult">Not checked</span>
+          </div>
+        </div>
+      </section>
+
     </div>
-    <div class="sec-body">
-      <div class="sec-hint">
-        <b>Select the references that apply</b> to the test matrix you built. Five USP chapters are essential for these four products. Wrong selections reduce your score.
-      </div>
-      <div class="ref-list" id="refList"></div>
-      <div class="actions">
-        <button class="btn primary" id="checkRefBtn">✓ Check References</button>
-        <span class="result-pill" id="refResult">Not checked</span>
-      </div>
-    </div>
-  </section>
+  </div>
 
   <!-- ============ DEBRIEF ============ -->
   <section class="debrief">
@@ -604,13 +680,7 @@ const PRODUCTS = [
     route: 'ORAL SOLID',
     routeClass: 'nonsterile',
     desc: 'A non-sterile immediate-release tablet containing 500 mg paracetamol. Packaged in blister strips. Requires microbial quality per USP <1111>.',
-    tests: {
-      bioburden: true,       // USP <61> required — TAMC/TYMC on non-sterile product
-      specified: true,       // USP <62> required — E. coli and Salmonella for oral
-      sterility: false,      // Non-sterile product — no USP <71>
-      endotoxin: false,      // Not required for oral route
-      antimicrob: false      // Not preserved
-    },
+    tests: { bioburden: true, specified: true, sterility: false, endotoxin: false, antimicrob: false },
     icon: 'tablet'
   },
   {
@@ -620,13 +690,7 @@ const PRODUCTS = [
     route: 'PARENTERAL',
     routeClass: 'sterile',
     desc: 'A sterile single-dose IV injection of a small-molecule drug in a sealed glass vial. No preservative. Bypasses the body\'s natural barriers.',
-    tests: {
-      bioburden: false,      // Final product is sterile — use USP <71> instead
-      specified: false,      // Not applicable for sterile parenterals
-      sterility: true,       // USP <71> required
-      endotoxin: true,       // USP <85> required for parenteral
-      antimicrob: false      // Single-dose, no preservative
-    },
+    tests: { bioburden: false, specified: false, sterility: true, endotoxin: true, antimicrob: false },
     icon: 'vial'
   },
   {
@@ -636,13 +700,7 @@ const PRODUCTS = [
     route: 'OPHTHALMIC',
     routeClass: 'sterile',
     desc: 'A sterile multi-dose ophthalmic solution preserved with benzalkonium chloride. Applied directly to the eye — must be sterile and preservative-effective.',
-    tests: {
-      bioburden: false,      // Sterile product
-      specified: false,      // Not applicable
-      sterility: true,       // USP <71> required — sterile
-      endotoxin: false,      // Not required for ophthalmic route
-      antimicrob: true       // USP <51> required — multi-dose preserved
-    },
+    tests: { bioburden: false, specified: false, sterility: true, endotoxin: false, antimicrob: true },
     icon: 'dropper'
   },
   {
@@ -652,13 +710,7 @@ const PRODUCTS = [
     route: 'PARENTERAL · BIOLOGIC',
     routeClass: 'sterile',
     desc: 'An autologous CAR-T cell therapy product for IV infusion. Sterile biologic — no preservative. Produced in a Grade B cleanroom.',
-    tests: {
-      bioburden: false,      // Sterile product
-      specified: false,      // Not applicable
-      sterility: true,       // USP <71> required
-      endotoxin: true,       // USP <85> required for parenteral
-      antimicrob: false      // No preservative, single-infusion
-    },
+    tests: { bioburden: false, specified: false, sterility: true, endotoxin: true, antimicrob: false },
     icon: 'cell'
   }
 ];
@@ -675,39 +727,18 @@ const TEST_LABELS = {
    DATA — CALCULATIONS
    ========================================================= */
 const CALCULATIONS = [
-  {
-    id:'c1',
-    num: 1,
+  { id:'c1', num: 1,
     question: '<b>25 colonies</b> were recovered from a filtered sample of <b>50 mL</b> of purified water. What is the bioburden result in <b>CFU/mL</b>?',
-    answer: 0.5,
-    tolerance: 0.01,
-    unit: 'CFU/mL',
-    unitFull: '25 ÷ 50 = 0.5 CFU/mL',
-    icon: 'beaker',
-    visual: 'beaker'
-  },
-  {
-    id:'c2',
-    num: 2,
+    answer: 0.5, tolerance: 0.01, unit: 'CFU/mL', unitFull: '25 ÷ 50 = 0.5 CFU/mL',
+    icon: 'beaker', visual: 'beaker' },
+  { id:'c2', num: 2,
     question: '<b>25 colonies</b> were recovered from <b>10 g</b> of oral powder. What is the bioburden result in <b>CFU/g</b>?',
-    answer: 2.5,
-    tolerance: 0.01,
-    unit: 'CFU/g',
-    unitFull: '25 ÷ 10 = 2.5 CFU/g',
-    icon: 'powder',
-    visual: 'balance'
-  },
-  {
-    id:'c3',
-    num: 3,
+    answer: 2.5, tolerance: 0.01, unit: 'CFU/g', unitFull: '25 ÷ 10 = 2.5 CFU/g',
+    icon: 'powder', visual: 'balance' },
+  { id:'c3', num: 3,
     question: '<b>50 colonies</b> were recovered from a <b>100 mL</b> filtered sample. What is the result in <b>CFU/100 mL</b>?',
-    answer: 50,
-    tolerance: 0.5,
-    unit: 'CFU/100 mL',
-    unitFull: '50 ÷ 100 × 100 = 50 CFU/100 mL',
-    icon: 'flask',
-    visual: 'flask'
-  }
+    answer: 50, tolerance: 0.5, unit: 'CFU/100 mL', unitFull: '50 ÷ 100 × 100 = 50 CFU/100 mL',
+    icon: 'flask', visual: 'flask' }
 ];
 
 /* =========================================================
@@ -727,11 +758,11 @@ const REFERENCES = [
 /* =========================================================
    STATE
    ========================================================= */
-let productSelections = {}; // productId -> { bioburden: bool, ... }
+let productSelections = {};
 let matrixChecked = false;
 let matrixPts = 0;
 
-let calcAnswers = {};      // calcId -> string value
+let calcAnswers = {};
 let calcChecked = false;
 let calcPts = 0;
 
@@ -739,138 +770,97 @@ let refSelections = new Set();
 let refChecked = false;
 let refPts = 0;
 
+let activityLocked = true;
+
 /* =========================================================
    SVG VISUALS
    ========================================================= */
-
-/* --- Product SVG generators --- */
 function svgTablet(){
   return `
     <svg class="pc-svg" viewBox="0 0 260 180" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <radialGradient id="tabletGrad" cx="35%" cy="30%">
-          <stop offset="0%" stop-color="#ffffff"/>
-          <stop offset="100%" stop-color="#d8e3ec"/>
+          <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#d8e3ec"/>
         </radialGradient>
       </defs>
-      <!-- Shadow -->
       <ellipse cx="130" cy="148" rx="70" ry="8" fill="#000" opacity=".08"/>
-      <!-- Tablet -->
       <ellipse cx="130" cy="105" rx="72" ry="30" fill="#b8c5d1"/>
       <ellipse cx="130" cy="100" rx="72" ry="30" fill="url(#tabletGrad)" stroke="#7593aa" stroke-width="1.5"/>
-      <!-- Score line -->
       <line x1="85" y1="100" x2="175" y2="100" stroke="#7593aa" stroke-width="1.6" opacity=".7"/>
-      <!-- Highlight -->
       <ellipse cx="110" cy="88" rx="25" ry="7" fill="#fff" opacity=".6"/>
-      <!-- Blister strip behind -->
       <rect x="140" y="20" width="90" height="60" rx="6" fill="#e2f4f3" stroke="#0d6e6e" stroke-width="1.4" opacity=".9"/>
       <circle cx="160" cy="42" r="10" fill="#fff" stroke="#0d6e6e" stroke-width="1.2"/>
       <circle cx="188" cy="42" r="10" fill="#fff" stroke="#0d6e6e" stroke-width="1.2"/>
       <circle cx="160" cy="62" r="10" fill="#fff" stroke="#0d6e6e" stroke-width="1.2"/>
       <circle cx="188" cy="62" r="10" fill="#fff" stroke="#0d6e6e" stroke-width="1.2"/>
       <text x="185" y="14" text-anchor="middle" font-size="8" font-weight="800" fill="#0d6e6e">BLISTER</text>
-      <!-- Label -->
       <text x="130" y="170" text-anchor="middle" font-size="9" font-weight="800" fill="#41607a">NON-STERILE SOLID</text>
-    </svg>
-  `;
+    </svg>`;
 }
-
 function svgVial(){
   return `
     <svg class="pc-svg" viewBox="0 0 260 180" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="vialGlass" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#e2f4f3"/>
-          <stop offset="50%" stop-color="#ffffff"/>
+          <stop offset="0%" stop-color="#e2f4f3"/><stop offset="50%" stop-color="#ffffff"/>
           <stop offset="100%" stop-color="#b8d5d4"/>
         </linearGradient>
         <linearGradient id="liquid" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#5eead4"/>
-          <stop offset="100%" stop-color="#0f8b8b"/>
+          <stop offset="0%" stop-color="#5eead4"/><stop offset="100%" stop-color="#0f8b8b"/>
         </linearGradient>
       </defs>
-      <!-- Shadow -->
       <ellipse cx="130" cy="160" rx="55" ry="7" fill="#000" opacity=".08"/>
-      <!-- Vial body -->
       <rect x="90" y="60" width="80" height="95" rx="6" fill="url(#vialGlass)" stroke="#0d6e6e" stroke-width="1.6"/>
-      <!-- Liquid -->
       <rect x="92" y="90" width="76" height="63" rx="4" fill="url(#liquid)"/>
-      <!-- Meniscus -->
       <ellipse cx="130" cy="90" rx="38" ry="4" fill="#5eead4" opacity=".8"/>
-      <!-- Vial neck -->
       <rect x="105" y="45" width="50" height="18" rx="3" fill="#e2f4f3" stroke="#0d6e6e" stroke-width="1.4"/>
-      <!-- Cap -->
       <rect x="100" y="32" width="60" height="16" rx="5" fill="#c2410c"/>
       <rect x="100" y="34" width="60" height="4" fill="#fdece3" opacity=".6"/>
-      <!-- Needle -->
       <line x1="130" y1="32" x2="130" y2="12" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>
       <circle cx="130" cy="12" r="2.5" fill="#94a3b8"/>
-      <!-- Droplet hint -->
       <path d="M130 12 l-4 6 h8 z" fill="#5eead4" opacity=".7"/>
-      <!-- Sterile badge -->
       <rect x="180" y="68" width="60" height="22" rx="8" fill="#b91c1c"/>
       <text x="210" y="83" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">STERILE</text>
-      <!-- Label -->
       <text x="130" y="172" text-anchor="middle" font-size="9" font-weight="800" fill="#41607a">PARENTERAL · SINGLE-DOSE</text>
-    </svg>
-  `;
+    </svg>`;
 }
-
 function svgDropper(){
   return `
     <svg class="pc-svg" viewBox="0 0 260 180" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="dropBody" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#e2f4f3"/>
-          <stop offset="50%" stop-color="#ffffff"/>
+          <stop offset="0%" stop-color="#e2f4f3"/><stop offset="50%" stop-color="#ffffff"/>
           <stop offset="100%" stop-color="#a8cdcc"/>
         </linearGradient>
       </defs>
-      <!-- Shadow -->
       <ellipse cx="130" cy="160" rx="50" ry="7" fill="#000" opacity=".08"/>
-      <!-- Bottle body -->
       <rect x="100" y="70" width="60" height="80" rx="10" fill="url(#dropBody)" stroke="#0d6e6e" stroke-width="1.6"/>
-      <!-- Liquid line -->
       <line x1="102" y1="100" x2="158" y2="100" stroke="#0f8b8b" stroke-width="1.2" opacity=".5"/>
-      <!-- Neck -->
       <rect x="115" y="52" width="30" height="22" rx="4" fill="#e2f4f3" stroke="#0d6e6e" stroke-width="1.4"/>
-      <!-- Cap / tip -->
       <rect x="118" y="40" width="24" height="16" rx="4" fill="#c2410c"/>
       <polygon points="124,40 136,40 130,28" fill="#c2410c"/>
-      <!-- Drop -->
       <path d="M130 28 q-6 8 0 12 q6 -4 0 -12" fill="#5eead4" opacity=".85"/>
-      <!-- Eye icon -->
       <ellipse cx="215" cy="105" rx="30" ry="18" fill="none" stroke="#0d6e6e" stroke-width="1.6"/>
       <circle cx="215" cy="105" r="8" fill="#0d6e6e"/>
       <circle cx="217" cy="103" r="2.5" fill="#fff"/>
-      <!-- Sterile badge -->
       <rect x="180" y="60" width="60" height="22" rx="8" fill="#b91c1c"/>
       <text x="210" y="75" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">STERILE</text>
-      <!-- Preserved badge -->
       <rect x="180" y="130" width="60" height="22" rx="8" fill="#6d28d9"/>
       <text x="210" y="145" text-anchor="middle" font-size="9" font-weight="900" fill="#fff">PRESERVED</text>
-      <!-- Label -->
       <text x="130" y="172" text-anchor="middle" font-size="9" font-weight="800" fill="#41607a">OPHTHALMIC · MULTI-DOSE</text>
-    </svg>
-  `;
+    </svg>`;
 }
-
 function svgCell(){
   return `
     <svg class="pc-svg" viewBox="0 0 260 180" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <radialGradient id="cellGrad" cx="35%" cy="30%">
-          <stop offset="0%" stop-color="#5eead4"/>
-          <stop offset="100%" stop-color="#0d6e6e"/>
+          <stop offset="0%" stop-color="#5eead4"/><stop offset="100%" stop-color="#0d6e6e"/>
         </radialGradient>
       </defs>
-      <!-- Shadow -->
       <ellipse cx="130" cy="160" rx="70" ry="7" fill="#000" opacity=".08"/>
-      <!-- Culture bag -->
       <rect x="60" y="40" width="140" height="105" rx="12" fill="#e2f4f3" stroke="#0d6e6e" stroke-width="1.8"/>
-      <!-- Liquid line -->
       <path d="M62 90 q68 -15 136 0 v53 q0 10 -10 10 h-116 q-10 0 -10 -10 z" fill="#5eead4" opacity=".35"/>
-      <!-- Cells -->
       <circle cx="90" cy="115" r="9" fill="url(#cellGrad)"/>
       <circle cx="86" cy="112" r="3" fill="#fff" opacity=".7"/>
       <circle cx="135" cy="125" r="8" fill="url(#cellGrad)"/>
@@ -879,21 +869,15 @@ function svgCell(){
       <circle cx="171" cy="107" r="3" fill="#fff" opacity=".7"/>
       <circle cx="115" cy="100" r="7" fill="url(#cellGrad)" opacity=".8"/>
       <circle cx="155" cy="95" r="6" fill="url(#cellGrad)" opacity=".8"/>
-      <!-- Tubing ports -->
       <rect x="70" y="30" width="10" height="12" fill="#c2410c"/>
       <rect x="180" y="30" width="10" height="12" fill="#c2410c"/>
-      <!-- Sterile badge -->
       <rect x="180" y="60" width="60" height="22" rx="8" fill="#b91c1c"/>
       <text x="210" y="75" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">STERILE</text>
-      <!-- Biologic badge -->
       <rect x="180" y="130" width="60" height="22" rx="8" fill="#6d28d9"/>
       <text x="210" y="145" text-anchor="middle" font-size="9" font-weight="900" fill="#fff">BIOLOGIC</text>
-      <!-- Label -->
       <text x="130" y="172" text-anchor="middle" font-size="9" font-weight="800" fill="#41607a">AUTOLOGOUS CELL THERAPY</text>
-    </svg>
-  `;
+    </svg>`;
 }
-
 function getProductSVG(icon){
   if (icon === 'tablet') return svgTablet();
   if (icon === 'vial') return svgVial();
@@ -901,12 +885,9 @@ function getProductSVG(icon){
   if (icon === 'cell') return svgCell();
   return '';
 }
-
-/* --- Calculation SVGs --- */
 function svgBeakerCalc(){
   return `
     <svg viewBox="0 0 260 130" xmlns="http://www.w3.org/2000/svg">
-      <!-- Petri dish with 25 colonies -->
       <circle cx="70" cy="65" r="48" fill="#f8fbff" stroke="#0d6e6e" stroke-width="2"/>
       <circle cx="70" cy="65" r="42" fill="#f0f9ff" stroke="#0d6e6e" stroke-width=".8" stroke-dasharray="3 3"/>
       ${Array.from({length:25}).map((_,i) => {
@@ -917,24 +898,17 @@ function svgBeakerCalc(){
         return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.2" fill="#1f2937"/>`;
       }).join('')}
       <text x="70" y="122" text-anchor="middle" font-size="9" font-weight="800" fill="#41607a">25 COLONIES</text>
-
-      <!-- Equals -->
       <text x="140" y="70" text-anchor="middle" font-size="22" font-weight="900" fill="#0d6e6e">÷</text>
-
-      <!-- Beaker -->
       <path d="M170 30 v70 h60 v-70" fill="none" stroke="#0d6e6e" stroke-width="2"/>
       <line x1="175" y1="55" x2="225" y2="55" stroke="#0d6e6e" stroke-width=".8" stroke-dasharray="3 3"/>
       <line x1="175" y1="75" x2="225" y2="75" stroke="#0d6e6e" stroke-width=".8" stroke-dasharray="3 3"/>
       <rect x="172" y="70" width="56" height="30" fill="#5eead4" opacity=".45"/>
       <text x="200" y="122" text-anchor="middle" font-size="9" font-weight="800" fill="#41607a">50 mL</text>
-    </svg>
-  `;
+    </svg>`;
 }
-
 function svgBalanceCalc(){
   return `
     <svg viewBox="0 0 260 130" xmlns="http://www.w3.org/2000/svg">
-      <!-- Petri dish -->
       <circle cx="70" cy="65" r="48" fill="#f8fbff" stroke="#0d6e6e" stroke-width="2"/>
       ${Array.from({length:25}).map((_,i) => {
         const angle = (i * 137.5) * (Math.PI / 180);
@@ -944,24 +918,18 @@ function svgBalanceCalc(){
         return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.2" fill="#1f2937"/>`;
       }).join('')}
       <text x="70" y="122" text-anchor="middle" font-size="9" font-weight="800" fill="#41607a">25 COLONIES</text>
-
       <text x="140" y="70" text-anchor="middle" font-size="22" font-weight="900" fill="#0d6e6e">÷</text>
-
-      <!-- Balance -->
       <rect x="180" y="30" width="56" height="70" rx="6" fill="#f6f9fb" stroke="#0d6e6e" stroke-width="1.6"/>
       <rect x="185" y="45" width="46" height="20" rx="3" fill="#e2f4f3" stroke="#0d6e6e" stroke-width="1"/>
       <text x="208" y="59" text-anchor="middle" font-size="10" font-weight="900" fill="#0d6e6e">10.0 g</text>
       <rect x="185" y="72" width="46" height="20" rx="3" fill="#fdf4e3" stroke="#a16207" stroke-width="1"/>
       <text x="208" y="86" text-anchor="middle" font-size="9" font-weight="800" fill="#a16207">POWDER</text>
       <text x="208" y="122" text-anchor="middle" font-size="9" font-weight="800" fill="#41607a">10 g</text>
-    </svg>
-  `;
+    </svg>`;
 }
-
 function svgFlaskCalc(){
   return `
     <svg viewBox="0 0 260 130" xmlns="http://www.w3.org/2000/svg">
-      <!-- Petri dish -->
       <circle cx="70" cy="65" r="48" fill="#f8fbff" stroke="#0d6e6e" stroke-width="2"/>
       ${Array.from({length:40}).map((_,i) => {
         const angle = (i * 137.5) * (Math.PI / 180);
@@ -971,20 +939,15 @@ function svgFlaskCalc(){
         return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.8" fill="#1f2937"/>`;
       }).join('')}
       <text x="70" y="122" text-anchor="middle" font-size="9" font-weight="800" fill="#41607a">50 COLONIES</text>
-
       <text x="140" y="70" text-anchor="middle" font-size="22" font-weight="900" fill="#0d6e6e">÷</text>
-
-      <!-- Flask -->
       <path d="M180 30 h30 v30 l20 40 a8 8 0 0 1 -7 12 h-56 a8 8 0 0 1 -7 -12 l20 -40 v-30 z"
             fill="#e2f4f3" stroke="#0d6e6e" stroke-width="1.6"/>
       <rect x="195" y="35" width="10" height="8" fill="#0d6e6e"/>
       <path d="M178 80 l22 40 h-22 a4 4 0 0 1 -3 -6 z" fill="#5eead4" opacity=".5"/>
       <text x="195" y="100" text-anchor="middle" font-size="9" font-weight="900" fill="#0d6e6e">100 mL</text>
       <text x="195" y="122" text-anchor="middle" font-size="9" font-weight="800" fill="#41607a">100 mL</text>
-    </svg>
-  `;
+    </svg>`;
 }
-
 function getCalcSVG(visual){
   if (visual === 'beaker') return svgBeakerCalc();
   if (visual === 'balance') return svgBalanceCalc();
@@ -1012,23 +975,19 @@ function renderProducts(){
         <h3>${p.name}</h3>
         <span class="route ${p.routeClass}">${p.route}</span>
       </div>
-      <div class="pc-visual">
-        ${getProductSVG(p.icon)}
-      </div>
+      <div class="pc-visual">${getProductSVG(p.icon)}</div>
       <div class="pc-body">
         <div class="pc-desc"><b>Description:</b> ${p.desc}</div>
         <div class="test-matrix-label">
-          <span>Required QC Tests</span>
-          <span>Select all that apply</span>
+          <span>Required QC Tests</span><span>Select all that apply</span>
         </div>
         <div class="test-grid" data-role="tests">
           ${Object.keys(TEST_LABELS).map(k => `
             <label class="test-toggle" data-test="${k}">
-              <input type="checkbox" data-product="${p.id}" data-test="${k}">
+              <input type="checkbox" data-product="${p.id}" data-test="${k}" disabled>
               <span class="box"></span>
               <span>${TEST_LABELS[k].name}<br><span style="font-size:10.5px;opacity:.7">${TEST_LABELS[k].ref}</span></span>
-            </label>
-          `).join('')}
+            </label>`).join('')}
         </div>
       </div>
       <div class="pc-footer">
@@ -1037,18 +996,19 @@ function renderProducts(){
     `;
     productsGrid.appendChild(card);
   });
-
-  productsGrid.addEventListener('change', e => {
-    const cb = e.target.closest('input[type="checkbox"]');
-    if (!cb) return;
-    const pid = cb.dataset.product;
-    const tkey = cb.dataset.test;
-    productSelections[pid][tkey] = cb.checked;
-    matrixChecked = false;
-    applyMatrixIdle();
-    updateScores();
-  });
 }
+
+productsGrid.addEventListener('change', e => {
+  if (activityLocked) return;
+  const cb = e.target.closest('input[type="checkbox"]');
+  if (!cb) return;
+  const pid = cb.dataset.product;
+  const tkey = cb.dataset.test;
+  productSelections[pid][tkey] = cb.checked;
+  matrixChecked = false;
+  applyMatrixIdle();
+  updateScores();
+});
 
 function applyMatrixIdle(){
   productsGrid.querySelectorAll('.test-toggle').forEach(el => el.classList.remove('correct','wrong','missed'));
@@ -1063,35 +1023,23 @@ function applyMatrixIdle(){
 }
 
 function checkMatrix(){
+  if (activityLocked) return;
   matrixChecked = true;
-  let totalCorrect = 0;
-  let totalSelections = 0;
-  let totalWrong = 0;
-  let totalPossible = 0;
+  let totalCorrect = 0, totalWrong = 0, totalPossible = 0;
 
   PRODUCTS.forEach(p => {
     const card = productsGrid.querySelector(`.product-card[data-id="${p.id}"]`);
-    let cardCorrect = 0;
-    let cardWrong = 0;
-    let cardPossible = 0;
+    let cardCorrect = 0, cardWrong = 0, cardPossible = 0;
 
     Object.keys(TEST_LABELS).forEach(tkey => {
       const el = card.querySelector(`.test-toggle[data-test="${tkey}"]`);
       const selected = productSelections[p.id][tkey];
       const correct = p.tests[tkey];
-
       if (correct) cardPossible++;
       el.classList.remove('correct','wrong','missed');
-
-      if (correct && selected){
-        el.classList.add('correct');
-        cardCorrect++;
-      } else if (!correct && selected){
-        el.classList.add('wrong');
-        cardWrong++;
-      } else if (correct && !selected){
-        el.classList.add('missed');
-      }
+      if (correct && selected){ el.classList.add('correct'); cardCorrect++; }
+      else if (!correct && selected){ el.classList.add('wrong'); cardWrong++; }
+      else if (correct && !selected){ el.classList.add('missed'); }
       el.querySelectorAll('input').forEach(i => i.disabled = true);
     });
 
@@ -1099,8 +1047,6 @@ function checkMatrix(){
     totalWrong += cardWrong;
     totalPossible += cardPossible;
 
-    // Card visual
-    const cardPct = cardCorrect / cardPossible;
     card.classList.remove('checked-ok','checked-part','checked-bad');
     const pill = card.querySelector('[data-role="pill"]');
     if (cardWrong === 0 && cardCorrect === cardPossible){
@@ -1118,7 +1064,6 @@ function checkMatrix(){
     }
   });
 
-  // Score: (correct - 0.5 × wrong) / possible × 5
   const raw = Math.max(0, totalCorrect - 0.5 * totalWrong);
   matrixPts = Math.round((raw / totalPossible) * 5 * 10) / 10;
 
@@ -1145,36 +1090,35 @@ function renderCalculations(){
   calcGrid.innerHTML = '';
   CALCULATIONS.forEach(c => {
     calcAnswers[c.id] = '';
-
     const card = document.createElement('article');
     card.className = 'calc-card';
     card.dataset.id = c.id;
 
     card.innerHTML = `
       <div class="calc-head">
-        <span class="num">${c.num}</span>
-        <span>Question ${c.num}</span>
+        <span class="num">${c.num}</span><span>Question ${c.num}</span>
       </div>
       <div class="calc-visual">${getCalcSVG(c.visual)}</div>
       <div class="calc-q">${c.question}</div>
       <div class="calc-input-row">
-        <input type="number" step="0.01" class="calc-input" data-calc="${c.id}" placeholder="Enter value">
+        <input type="number" step="0.01" class="calc-input" data-calc="${c.id}" placeholder="Enter value" disabled>
         <span class="calc-unit">${c.unit}</span>
       </div>
       <div class="calc-fb" data-role="fb"></div>
     `;
     calcGrid.appendChild(card);
   });
-
-  calcGrid.addEventListener('input', e => {
-    const inp = e.target.closest('.calc-input');
-    if (!inp) return;
-    calcAnswers[inp.dataset.calc] = inp.value;
-    calcChecked = false;
-    applyCalcIdle();
-    updateScores();
-  });
 }
+
+calcGrid.addEventListener('input', e => {
+  if (activityLocked) return;
+  const inp = e.target.closest('.calc-input');
+  if (!inp) return;
+  calcAnswers[inp.dataset.calc] = inp.value;
+  calcChecked = false;
+  applyCalcIdle();
+  updateScores();
+});
 
 function applyCalcIdle(){
   calcGrid.querySelectorAll('.calc-card').forEach(el => el.classList.remove('checked-ok','checked-bad'));
@@ -1186,6 +1130,7 @@ function applyCalcIdle(){
 }
 
 function checkCalculations(){
+  if (activityLocked) return;
   calcChecked = true;
   let correct = 0;
 
@@ -1240,24 +1185,25 @@ function renderReferences(){
     lbl.className = 'ref-row';
     lbl.dataset.id = r.id;
     lbl.innerHTML = `
-      <input type="checkbox" data-id="${r.id}">
+      <input type="checkbox" data-id="${r.id}" disabled>
       <span class="box"></span>
       <span class="ref-text">${r.text}</span>
       <span class="ref-tag">${r.essential ? 'Essential' : 'Context'}</span>
     `;
     refList.appendChild(lbl);
   });
-
-  refList.addEventListener('change', e => {
-    const cb = e.target.closest('input[type="checkbox"]');
-    if (!cb) return;
-    if (cb.checked) refSelections.add(cb.dataset.id);
-    else refSelections.delete(cb.dataset.id);
-    refChecked = false;
-    applyRefIdle();
-    updateScores();
-  });
 }
+
+refList.addEventListener('change', e => {
+  if (activityLocked) return;
+  const cb = e.target.closest('input[type="checkbox"]');
+  if (!cb) return;
+  if (cb.checked) refSelections.add(cb.dataset.id);
+  else refSelections.delete(cb.dataset.id);
+  refChecked = false;
+  applyRefIdle();
+  updateScores();
+});
 
 function applyRefIdle(){
   refList.querySelectorAll('.ref-row').forEach(el => {
@@ -1271,10 +1217,9 @@ function applyRefIdle(){
 }
 
 function checkReferences(){
+  if (activityLocked) return;
   refChecked = true;
-  let pts = 0;
-  let correctEssential = 0;
-  let wrongSelected = 0;
+  let pts = 0, correctEssential = 0, wrongSelected = 0;
 
   REFERENCES.forEach(r => {
     const el = refList.querySelector(`.ref-row[data-id="${r.id}"]`);
@@ -1284,8 +1229,7 @@ function checkReferences(){
 
     if (r.essential){
       if (selected){
-        pts += 0.4;
-        correctEssential++;
+        pts += 0.4; correctEssential++;
         el.classList.add('correct');
         tag.textContent = '✓ Selected';
       } else {
@@ -1294,8 +1238,7 @@ function checkReferences(){
       }
     } else if (r.wrong){
       if (selected){
-        pts -= 0.2;
-        wrongSelected++;
+        pts -= 0.2; wrongSelected++;
         el.classList.add('wrong');
         tag.textContent = '✗ Not relevant';
       } else {
@@ -1317,7 +1260,6 @@ function checkReferences(){
     res.className = 'result-pill bad';
     res.textContent = `✗ ${correctEssential}/5 essential · ${refPts.toFixed(1)} pts`;
   }
-
   updateScores();
 }
 
@@ -1343,36 +1285,66 @@ function updateScores(){
 }
 
 /* =========================================================
+   LOCK / UNLOCK
+   ========================================================= */
+const lockedWrap = document.getElementById('lockedWrap');
+const checkAllBtn = document.getElementById('checkAllBtn');
+const checkMatrixBtn = document.getElementById('checkMatrixBtn');
+const checkCalcBtn = document.getElementById('checkCalcBtn');
+const checkRefBtn = document.getElementById('checkRefBtn');
+
+function unlockActivity(){
+  activityLocked = false;
+  lockedWrap.classList.remove('locked');
+  checkAllBtn.disabled = false;
+  checkMatrixBtn.disabled = false;
+  checkCalcBtn.disabled = false;
+  checkRefBtn.disabled = false;
+  lockedWrap.querySelectorAll('input[type="checkbox"], input[type="radio"], input[type="number"]').forEach(i => i.disabled = false);
+  showToast('🔓 Activity unlocked — begin answering');
+}
+
+function lockActivity(){
+  activityLocked = true;
+  lockedWrap.classList.add('locked');
+  checkAllBtn.disabled = true;
+  checkMatrixBtn.disabled = true;
+  checkCalcBtn.disabled = true;
+  checkRefBtn.disabled = true;
+  lockedWrap.querySelectorAll('input[type="checkbox"], input[type="radio"], input[type="number"]').forEach(i => i.disabled = true);
+}
+
+/* =========================================================
    BUTTON WIRING
    ========================================================= */
-document.getElementById('checkMatrixBtn').addEventListener('click', () => {
+checkMatrixBtn.addEventListener('click', () => {
+  if (activityLocked) return;
   let anySelected = false;
-  PRODUCTS.forEach(p => {
-    if (Object.values(productSelections[p.id]).some(v => v)) anySelected = true;
-  });
+  PRODUCTS.forEach(p => { if (Object.values(productSelections[p.id]).some(v => v)) anySelected = true; });
   if (!anySelected){ showToast('⚠ No tests selected yet'); return; }
   checkMatrix();
   showToast(`✓ Test matrix scored — ${matrixPts.toFixed(1)} / 5.0`);
 });
 
-document.getElementById('checkCalcBtn').addEventListener('click', () => {
+checkCalcBtn.addEventListener('click', () => {
+  if (activityLocked) return;
   const anyFilled = Object.values(calcAnswers).some(v => v !== '' && v !== null);
   if (!anyFilled){ showToast('⚠ No answers entered yet'); return; }
   checkCalculations();
   showToast(`✓ Calculations scored — ${calcPts} / 3`);
 });
 
-document.getElementById('checkRefBtn').addEventListener('click', () => {
+checkRefBtn.addEventListener('click', () => {
+  if (activityLocked) return;
   if (refSelections.size === 0){ showToast('⚠ No references selected'); return; }
   checkReferences();
   showToast(`✓ References scored — ${refPts.toFixed(1)} / 2.0`);
 });
 
-document.getElementById('checkAllBtn').addEventListener('click', () => {
+checkAllBtn.addEventListener('click', () => {
+  if (activityLocked) return;
   let anySelected = false;
-  PRODUCTS.forEach(p => {
-    if (Object.values(productSelections[p.id]).some(v => v)) anySelected = true;
-  });
+  PRODUCTS.forEach(p => { if (Object.values(productSelections[p.id]).some(v => v)) anySelected = true; });
   if (anySelected) checkMatrix();
   if (Object.values(calcAnswers).some(v => v !== '')) checkCalculations();
   if (refSelections.size > 0) checkReferences();
@@ -1380,7 +1352,7 @@ document.getElementById('checkAllBtn').addEventListener('click', () => {
 });
 
 document.getElementById('resetBtn').addEventListener('click', () => {
-  if (!confirm('Reset all answers and scores?')) return;
+  if (!confirm('Reset all answers and scores? The activity will lock again.')) return;
 
   PRODUCTS.forEach(p => {
     productSelections[p.id] = { bioburden:false, specified:false, sterility:false, endotoxin:false, antimicrob:false };
@@ -1393,19 +1365,21 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   refSelections = new Set();
   refChecked = false; refPts = 0;
 
-  // Reset UI
-  productsGrid.querySelectorAll('input[type="checkbox"]').forEach(c => { c.checked = false; c.disabled = false; });
+  productsGrid.querySelectorAll('input[type="checkbox"]').forEach(c => { c.checked = false; c.disabled = true; });
   applyMatrixIdle();
 
-  calcGrid.querySelectorAll('.calc-input').forEach(i => { i.value = ''; i.disabled = false; });
+  calcGrid.querySelectorAll('.calc-input').forEach(i => { i.value = ''; i.disabled = true; });
   applyCalcIdle();
 
-  refList.querySelectorAll('input[type="checkbox"]').forEach(c => { c.checked = false; c.disabled = false; });
+  refList.querySelectorAll('input[type="checkbox"]').forEach(c => { c.checked = false; c.disabled = true; });
   applyRefIdle();
+
+  // Re-lock
+  lockActivity();
 
   updateScores();
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  showToast('↺ Activity reset');
+  showToast('↺ Activity reset — press ▶ Start to unlock');
 });
 
 document.getElementById('printBtn').addEventListener('click', () => window.print());
@@ -1550,6 +1524,10 @@ function stopTimer(){
 }
 
 startBtn.addEventListener('click', () => {
+  if (activityLocked) {
+    unlockActivity();
+    timerEl.classList.remove('locked');
+  }
   timerRunning ? stopTimer() : startTimer();
 });
 
@@ -1557,7 +1535,9 @@ document.getElementById('resetTimer').addEventListener('click', () => {
   stopTimer();
   timeLeft = TIMER_START;
   renderClock();
-  showToast('↺ Timer reset to 15:00');
+  timerEl.classList.add('locked');
+  lockActivity();
+  showToast('↺ Timer reset — press ▶ Start to unlock');
 });
 
 renderClock();
@@ -1581,6 +1561,7 @@ function showToast(msg){
   renderProducts();
   renderCalculations();
   renderReferences();
+  lockActivity();
   updateScores();
 })();
 </script>
